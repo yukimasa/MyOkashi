@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import SafariServices
 
-class ViewController: UIViewController, UISearchBarDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, SFSafariViewControllerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,7 +21,8 @@ class ViewController: UIViewController, UISearchBarDelegate, UITableViewDataSour
         searchText.placeholder = "お菓子の名前を入力してください"
         // Table ViewのDateSourceを設定
         tableView.dataSource = self
-        
+        // Table ViewのDelegateを設定
+        tableView.delegate = self
     }
 
 
@@ -142,6 +144,27 @@ class ViewController: UIViewController, UISearchBarDelegate, UITableViewDataSour
         }
         // 設定済みのCellオブジェクトを画面に反映
         return cell
+    }
+    
+    // Cellが選択された際に呼び出されるdelegateメソッド
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // ハイライト解除
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        // SFSafariViewを開く
+        let safariViewController = SFSafariViewController(url: okashiList[indexPath.row].link)
+        
+        // delegateの通知先を自分自身
+        safariViewController.delegate = self
+        
+        // SafariViewが開かれる
+        present(safariViewController, animated: true, completion: nil)
+    }
+    
+    // SafariViewが閉じられた時にお呼ばれるdelegateメソッド
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        // SafariViewを閉じる
+        dismiss(animated: true, completion: nil)
     }
 }
 
